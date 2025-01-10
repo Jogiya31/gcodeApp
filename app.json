@@ -1,28 +1,37 @@
 {
   "expo": {
-    "name": "gcodeApp",
-    "slug": "gcodeApp",
+    "name": "GCode",
+    "slug": "gcode",
     "version": "1.0.0",
+    "sdkVersion": "52.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/key.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/prayasLogo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.prayas.GCode"
     },
     "android": {
+      "package": "com.prayas.GCode",
+      "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/prayasLogo.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a1b8a1e9-ab36-4974-b1a8-cf61d24785fc"
+      }
     }
   }
 }
