@@ -185,14 +185,14 @@ const Registration = ({ navigation }) => {
             </TouchableOpacity>
             {/* Reset Button */}
 
-            <View style={styles.reset}>
+            {/* <View style={styles.reset}>
               <Text style={styles.resetText}>
                 <Text>Click here to </Text>
                 <TouchableOpacity onPress={handleReset}>
                   <Text style={styles.resetButtonText}>Reset details</Text>
                 </TouchableOpacity>
               </Text>
-            </View>
+            </View> */}
           </ScrollView>
         </View>
       </TouchableWithoutFeedback>
@@ -268,6 +268,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   resetButtonText: {
+    position: "absolute",
     color: "#ff6347",
     fontSize: 18,
     fontWeight: "bold",
