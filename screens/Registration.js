@@ -12,6 +12,7 @@ import {
   Alert,
   ImageBackground,
   Platform,
+  StatusBar,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -20,6 +21,14 @@ const Registration = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [key, setKey] = useState("");
+  const [isFormDisabled, setIsFormDisabled] = useState(false); // State to track form disabling
+  const [remainingTime, setRemainingTime] = useState(null); // Stores remaining time for countdown
+
+  useEffect(() => {
+    StatusBar.setBackgroundColor("#282796");
+    StatusBar.setBarStyle("light-content");
+  }, []);
+
 
   useEffect(() => {
     navigation.setOptions({
@@ -41,8 +50,54 @@ const Registration = ({ navigation }) => {
       }
     };
 
+    const fetchExpirationTime = async () => {
+      try {
+        const storedExpiration = await AsyncStorage.getItem("expirationTime");
+
+        if (storedExpiration) {
+          const currentTime = new Date().getTime();
+          const parsedExpirationTime = parseInt(storedExpiration);
+
+          if (parsedExpirationTime > currentTime) {
+            // Calculate the remaining time
+            setRemainingTime(
+              Math.max(
+                0,
+                Math.floor((parsedExpirationTime - currentTime) / 1000)
+              )
+            );
+            setIsFormDisabled(true); // Disable form until timer expires
+          } else {
+            // If expired, enable the form
+            setIsFormDisabled(false);
+            setRemainingTime(null);
+          }
+        }
+      } catch (error) {
+        Alert.alert("Error", "Failed to load expiration time.");
+      }
+    };
+
     fetchUserDetails();
+    fetchExpirationTime();
   }, [navigation]);
+
+  useEffect(() => {
+    if (remainingTime !== null && remainingTime > 0) {
+      const timer = setInterval(() => {
+        setRemainingTime((prevTime) => {
+          const updatedTime = prevTime - 1;
+          if (updatedTime <= 0) {
+            setIsFormDisabled(false); // Enable form when timer expires
+            clearInterval(timer);
+          }
+          return updatedTime;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer); // Cleanup timer on component unmount
+    }
+  }, [remainingTime]);
 
   const validateEmail = (email) => {
     const emailRegex = /\S+@nic\.in/; // Regex to validate '@nic.in' domain
@@ -88,8 +143,14 @@ const Registration = ({ navigation }) => {
     const userDetails = { username, email, mobile, key };
 
     try {
+      // Remove existing user details from AsyncStorage
+      await AsyncStorage.removeItem("userDetails");
+
+      // Save the new user details in AsyncStorage
       await AsyncStorage.setItem("userDetails", JSON.stringify(userDetails));
-      Alert.alert("Success", "Registration successful.");
+      if (!isFormDisabled) {
+        Alert.alert("Success", "Registration successful.");
+      }
       navigation.navigate("CodeGeneration");
     } catch (error) {
       Alert.alert("Error", "Failed to save user details.");
@@ -146,6 +207,7 @@ const Registration = ({ navigation }) => {
                 value={username}
                 onChangeText={setUsername}
                 placeholderTextColor="#aaa"
+                editable={!isFormDisabled} // Disable if form is disabled
               />
             </View>
             <View>
@@ -157,6 +219,7 @@ const Registration = ({ navigation }) => {
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 placeholderTextColor="#aaa"
+                editable={!isFormDisabled} // Disable if form is disabled
               />
             </View>
             <View>
@@ -168,6 +231,7 @@ const Registration = ({ navigation }) => {
                 onChangeText={setMobile}
                 keyboardType="phone-pad"
                 placeholderTextColor="#aaa"
+                editable={!isFormDisabled} // Disable if form is disabled
               />
             </View>
             <View>
@@ -178,21 +242,14 @@ const Registration = ({ navigation }) => {
                 value={key}
                 onChangeText={setKey}
                 placeholderTextColor="#aaa"
+                editable={!isFormDisabled} // Disable if form is disabled
               />
             </View>
             <TouchableOpacity style={styles.button} onPress={handleRegister}>
-              <Text style={styles.buttonText}>Submit</Text>
-            </TouchableOpacity>
-            {/* Reset Button */}
-
-            {/* <View style={styles.reset}>
-              <Text style={styles.resetText}>
-                <Text>Click here to </Text>
-                <TouchableOpacity onPress={handleReset}>
-                  <Text style={styles.resetButtonText}>Reset details</Text>
-                </TouchableOpacity>
+              <Text style={styles.buttonText}>
+                {!isFormDisabled ? "Submit" : "Next"}
               </Text>
-            </View> */}
+            </TouchableOpacity>
           </ScrollView>
         </View>
       </TouchableWithoutFeedback>
@@ -202,12 +259,13 @@ const Registration = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    display: "flex",
     backgroundColor: "#f5f6fa",
   },
   header: {
     height: 220,
     justifyContent: "center",
+    resizeMode: "cover",
     paddingLeft: 30,
   },
   headerInfo: {
@@ -242,36 +300,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
     marginBottom: 15,
-    borderWidth: 1,
-    borderColor: "#ddd",
   },
   button: {
-    height: 50,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 20,
     backgroundColor: "#00b652",
+    padding: 15,
+    borderRadius: 10,
+    marginTop:20,
+    alignItems: "center",
+    justifyContent: "center",
   },
   buttonText: {
     color: "#fff",
     fontSize: 18,
-    fontWeight: "bold",
-  },
-  reset: {
-    marginTop: 10,
-    display: "flex",
-    width: "100%",
-  },
-  resetText: {
-    display: "flex",
-    alignItems: "center",
-  },
-  resetButtonText: {
-    position: "absolute",
-    color: "#ff6347",
-    fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
   },
 });
 

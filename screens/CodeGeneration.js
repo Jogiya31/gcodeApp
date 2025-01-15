@@ -7,6 +7,11 @@ import {
   ActivityIndicator,
   Alert,
   ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  StatusBar,
+  Keyboard,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CryptoJS from "crypto-js";
@@ -15,12 +20,48 @@ const CodeGeneration = ({ navigation }) => {
   const [userDetails, setUserDetails] = useState(null);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [expirationTime, setExpirationTime] = useState(null); // Stores expiration time
-  const [remainingTime, setRemainingTime] = useState(null); // Stores remaining time in seconds
+  const [expirationTime, setExpirationTime] = useState(null);
+  const [remainingTime, setRemainingTime] = useState(null);
+  const [formattedDate, setFormattedDate] = useState(""); // State for formatted date
+  const [formattedTime, setFormattedTime] = useState(""); // State for formatted time
+
+  useEffect(() => {
+    const updateDateTime = () => {
+      const currentDate = new Date();
+
+      const formattedDate = `${currentDate.getDate()} ${currentDate.toLocaleString(
+        "default",
+        { month: "short" }
+      )} ${currentDate.getFullYear()}`;
+
+      let hours = currentDate.getHours();
+      const minutes = currentDate.getMinutes().toString().padStart(2, "0");
+      const period = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12 || 12;
+      const formattedTime = `${hours}:${minutes} ${period}`;
+
+      setFormattedDate(formattedDate);
+      setFormattedTime(formattedTime);
+    };
+
+    // Update every second (1000ms)
+    const intervalId = setInterval(updateDateTime, 1000);
+
+    // Initial call to update the date and time immediately
+    updateDateTime();
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    StatusBar.setBackgroundColor("#282796");
+    StatusBar.setBarStyle("light-content");
+  }, []);
 
   useEffect(() => {
     navigation.setOptions({
-      headerShown: false, // Disable default header
+      headerShown: false,
     });
 
     const fetchUserDetails = async () => {
@@ -51,12 +92,15 @@ const CodeGeneration = ({ navigation }) => {
           const parsedExpirationTime = parseInt(storedExpiration);
 
           if (parsedExpirationTime > currentTime) {
-            // Set the stored code and remaining time
             setCode(storedCode);
             setExpirationTime(parsedExpirationTime);
-            setRemainingTime(Math.max(0, Math.floor((parsedExpirationTime - currentTime) / 1000)));
+            setRemainingTime(
+              Math.max(
+                0,
+                Math.floor((parsedExpirationTime - currentTime) / 1000)
+              )
+            );
           } else {
-            // Clear the expired code and expiration time
             setCode("");
             setExpirationTime(null);
             setRemainingTime(null);
@@ -70,7 +114,6 @@ const CodeGeneration = ({ navigation }) => {
     fetchStoredCode();
   }, []);
 
-  // Timer to handle code expiration and countdown
   useEffect(() => {
     if (expirationTime) {
       const timer = setInterval(() => {
@@ -78,28 +121,32 @@ const CodeGeneration = ({ navigation }) => {
         const timeLeft = Math.max(
           0,
           Math.floor((expirationTime - currentTime) / 1000)
-        ); // Time left in seconds
+        );
 
         if (timeLeft <= 0) {
-          setCode(""); // Clear code
-          setExpirationTime(null); // Clear expiration time
-          setRemainingTime(null); // Clear countdown
+          setCode("");
+          setExpirationTime(null);
+          setRemainingTime(null);
           clearInterval(timer);
         } else {
           setRemainingTime(timeLeft);
         }
-      }, 1000); // Update every second
+      }, 1000);
 
-      return () => clearInterval(timer); // Cleanup timer on component unmount
+      return () => clearInterval(timer);
     }
   }, [expirationTime]);
 
   const generateCode = (userDetails) => {
     const { username, email, mobile, key } = userDetails;
 
-    const timestamp = Math.floor(Date.now() / 1000 / 60); // Precision to minute
+    // Round the current timestamp to the nearest 5 minutes (300,000 ms)
+    const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+    const timestamp =
+      Math.round(Date.now() / fiveMinutesInMilliseconds) *
+      fiveMinutesInMilliseconds;
 
-    // Convert inputs to lowercase and concatenate
+    // Concatenate user details and the timestamp
     const inputString =
       username.toLowerCase() +
       email.toLowerCase() +
@@ -119,7 +166,6 @@ const CodeGeneration = ({ navigation }) => {
 
   const handleGenerateCode = async () => {
     if (userDetails) {
-      // Check if the code is already generated and valid (not expired)
       if (remainingTime !== null && remainingTime > 0) {
         Alert.alert("Error", "Please wait for the current code to expire.");
         return;
@@ -128,12 +174,10 @@ const CodeGeneration = ({ navigation }) => {
       setLoading(true);
       const newCode = generateCode(userDetails);
 
-      // Set expiration time to 15 minutes from now
-      const expiration = new Date().getTime() + 15 * 60 * 1000; // 15 minutes in milliseconds
+      const expiration = new Date().getTime() + 5 * 60 * 1000;
       setExpirationTime(expiration);
       setCode(newCode);
 
-      // Store code and expiration time in AsyncStorage
       await AsyncStorage.setItem("generatedCode", newCode);
       await AsyncStorage.setItem("expirationTime", expiration.toString());
 
@@ -144,7 +188,7 @@ const CodeGeneration = ({ navigation }) => {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${minutes}:${secs.toString().padStart(2, "0")}`; // Format as MM:SS
+    return `${minutes}:${secs.toString().padStart(2, "0")}`;
   };
 
   const navigateToRegister = () => {
@@ -152,65 +196,75 @@ const CodeGeneration = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header Section with Background Image */}
-      <ImageBackground
-        source={require("../assets/mobileBG.png")}
-        style={styles.header}
-        resizeMode="stretch"
-      >
-        <View style={styles.headerInfo}>
-          <Text style={styles.headerText}>Generate Code</Text>
-        </View>
-      </ImageBackground>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          <ImageBackground
+            source={require("../assets/mobileBG.png")}
+            style={styles.header}
+            resizeMode="stretch"
+          >
+            <View style={styles.headerInfo}>
+              <Text style={styles.headerText}>Generate Code</Text>
+            </View>
+          </ImageBackground>
 
-      {/* Main Content */}
-      <View style={styles.innercontainer}>
-        {!code && (
-          <Text style={styles.infoText}>
-            Press Generate Code to get your current code.
-          </Text>
-        )}
-        <Text style={styles.codeText}>{code}</Text>
+          <View style={styles.innercontainer}>
+            <View style={styles.userInfo}>
+              <View>
+                <Text style={styles.welcome}>Welcome</Text>
+                <Text style={styles.userName}>
+                  {userDetails && userDetails.username}
+                </Text>
+              </View>
+              <View style={styles.dateBlock}>
+                <Text style={styles.date}>{formattedDate}</Text>
+                <Text style={styles.time}>{formattedTime}</Text>
+              </View>
+            </View>
 
-        {loading ? (
-          <ActivityIndicator size="large" color="#4CAF50" />
-        ) : (
-          <>
-            {code && remainingTime && (
+            {!code ? (
               <Text style={styles.infoText}>
-                Code expires in:{" "}
-                {remainingTime ? (
-                  <Text style={styles.remainingTime}>
-                    {formatTime(remainingTime)}
-                  </Text>
-                ) : (
-                  "Expired"
-                )}
+                Press Generate Code to get your current code.
               </Text>
+            ) : (
+              <Text style={styles.codeText}>{code}</Text>
             )}
-            <TouchableOpacity
-              style={[styles.button, remainingTime !== null && { backgroundColor: "#999" }]} // Disable button if timer is active
-              onPress={handleGenerateCode}
-              disabled={remainingTime !== null} // Disable button during countdown
-            >
-              <Text style={styles.buttonText}>
-                {remainingTime !== null
-                  ? "Wait for Countdown"
-                  : "Generate Code"}
-              </Text>
-            </TouchableOpacity>
-          </>
-        )}
 
-        <TouchableOpacity
-          style={styles.updateButton}
-          onPress={navigateToRegister}
-        >
-          <Text style={styles.buttonText}>Update Details</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+            {loading ? (
+              <ActivityIndicator size="large" color="#4CAF50" />
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={[
+                    styles.button,
+                    remainingTime !== null && { backgroundColor: "#999" },
+                  ]}
+                  onPress={handleGenerateCode}
+                  disabled={remainingTime !== null}
+                >
+                  <Text style={styles.buttonText}>
+                    {remainingTime !== null
+                      ? `Next Code Generate in ${formatTime(remainingTime)}`
+                      : "Generate Code"}
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
+
+            <TouchableOpacity
+              style={styles.updateButton}
+              onPress={navigateToRegister}
+            >
+              <Text style={styles.buttonText}>Update Details</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -223,7 +277,7 @@ const styles = StyleSheet.create({
     height: 220,
     justifyContent: "center",
     alignItems: "center",
-    paddingLeft: 30,
+    width: "100%",
   },
   headerText: {
     color: "#fff",
@@ -231,27 +285,59 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   innercontainer: {
-    paddingTop: 70,
+    paddingTop: 10,
     paddingHorizontal: 40,
+  },
+  userInfo: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  userName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#282796",
+    textTransform: "uppercase",
+  },
+  dateBlock: {
+    alignItems: "flex-end",
+    flexDirection: "column",
+  },
+  date: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#282796",
+  },
+  welcome: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#222",
+    marginTop: 5,
+  },
+  time: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#222",
+    marginTop: 5,
   },
   codeText: {
     fontSize: 56,
     fontWeight: "700",
-    marginBottom: 20,
+    marginTop: 100,
+    marginBottom: 54,
     textAlign: "center",
-    color: "#333",
-  },
-  remainingTime: {
-    fontSize: 16,
-    fontWeight: 700,
     color: "#282796",
+    textShadowOffset: { width: 2, height: 4 }, // Horizontal and Vertical shadow offset
+    textShadowRadius: 4, // The blur radius
+    textShadowColor: "rgba(46, 91, 173, 0.6)", // Shadow color with opacity
   },
   infoText: {
     fontSize: 18,
-    marginBottom: 20,
+    marginTop: 100,
+    marginBottom: 77,
     color: "#333",
     textAlign: "center",
-    paddingHorizontal: 30,
   },
   button: {
     width: "100%",
@@ -264,7 +350,7 @@ const styles = StyleSheet.create({
   },
   updateButton: {
     width: "100%",
-    backgroundColor: "#cb9a08", // Yellow color for update button
+    backgroundColor: "#cb9a08",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
