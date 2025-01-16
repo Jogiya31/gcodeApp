@@ -84,10 +84,6 @@ const CodeGeneration = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-
     const fetchUserDetails = async () => {
       try {
         const storedDetails = await AsyncStorage.getItem("userDetails");
@@ -207,8 +203,8 @@ const CodeGeneration = ({ navigation }) => {
             </Text>
           </View>
           <View style={styles.dateBlock}>
-            <Text style={styles.date}>{formattedDate}</Text>
             <Text style={styles.time}>{formattedTime}</Text>
+            <Text style={styles.date}>{formattedDate}</Text>
           </View>
         </View>
 
@@ -234,7 +230,7 @@ const CodeGeneration = ({ navigation }) => {
             >
               <Text style={styles.buttonText}>
                 {remainingTime !== null
-                  ? `Next Code Generate in ${formatTime(remainingTime)}`
+                  ? `Code expires in ${formatTime(remainingTime)} sec`
                   : "Generate Code"}
               </Text>
             </TouchableOpacity>
@@ -248,9 +244,7 @@ const CodeGeneration = ({ navigation }) => {
           >
             <Text style={styles.buttonText}>Update Details</Text>
           </TouchableOpacity>
-        ) : (
-         null
-        )}
+        ) : null}
       </View>
     </View>
   );
@@ -297,18 +291,18 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   date: {
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: 18,
+    fontWeight: "bold",
     color: "#282796",
   },
   welcome: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "500",
     color: "#222",
     marginTop: 5,
   },
   time: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "500",
     color: "#222",
     marginTop: 5,

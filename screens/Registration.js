@@ -26,10 +26,6 @@ const Registration = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: false, // Disable default header
-    });
-
     const fetchUserDetails = async () => {
       try {
         const storedDetails = await AsyncStorage.getItem("userDetails");
@@ -167,8 +163,6 @@ const Registration = ({ navigation }) => {
       Alert.alert("Error", "Failed to reset user details.");
     }
   };
-
-  console.log("userdetails", loginName);
 
   return (
     <View style={styles.container}>
