@@ -9,9 +9,9 @@ import {
   ImageBackground,
   KeyboardAvoidingView,
   Platform,
-  TouchableWithoutFeedback,
   StatusBar,
   Keyboard,
+  Pressable,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CryptoJS from "crypto-js";
@@ -55,7 +55,7 @@ const CodeGeneration = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    StatusBar.setBackgroundColor("#282796");
+    // StatusBar.setBackgroundColor("#282796");
     StatusBar.setBarStyle("light-content");
   }, []);
 
@@ -200,7 +200,7 @@ const CodeGeneration = ({ navigation }) => {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <Pressable onPress={Keyboard.dismiss}>
         <View style={styles.container}>
           <ImageBackground
             source={require("../assets/mobileBG.png")}
@@ -263,7 +263,7 @@ const CodeGeneration = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </Pressable>
     </KeyboardAvoidingView>
   );
 };
@@ -328,9 +328,7 @@ const styles = StyleSheet.create({
     marginBottom: 54,
     textAlign: "center",
     color: "#282796",
-    textShadowOffset: { width: 2, height: 4 }, // Horizontal and Vertical shadow offset
-    textShadowRadius: 4, // The blur radius
-    textShadowColor: "rgba(46, 91, 173, 0.6)", // Shadow color with opacity
+    textShadow: "2px 4px 4px rgba(46, 91, 173, 0.6)",
   },
   infoText: {
     fontSize: 18,

@@ -8,11 +8,11 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   ScrollView,
-  TouchableWithoutFeedback,
   Alert,
   ImageBackground,
   Platform,
   StatusBar,
+  Pressable,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -25,7 +25,7 @@ const Registration = ({ navigation }) => {
   const [remainingTime, setRemainingTime] = useState(null); // Stores remaining time for countdown
 
   useEffect(() => {
-    StatusBar.setBackgroundColor("#282796");
+    // StatusBar.setBackgroundColor("#282796");
     StatusBar.setBarStyle("light-content");
   }, []);
 
@@ -178,7 +178,7 @@ const Registration = ({ navigation }) => {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <Pressable onPress={Keyboard.dismiss}>
         <View style={styles.container}>
           {/* Header Section */}
           <ImageBackground
@@ -252,7 +252,7 @@ const Registration = ({ navigation }) => {
             </TouchableOpacity>
           </ScrollView>
         </View>
-      </TouchableWithoutFeedback>
+      </Pressable>
     </KeyboardAvoidingView>
   );
 };
@@ -265,7 +265,6 @@ const styles = StyleSheet.create({
   header: {
     height: 220,
     justifyContent: "center",
-    resizeMode: "cover",
     paddingLeft: 30,
   },
   headerInfo: {

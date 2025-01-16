@@ -29,6 +29,7 @@ const Index = ({ navigation }) => {
         <Image
           source={require("../assets/prayasLogo.png")}
           style={styles.logo}
+          resizeMode="contain"
         />
       </View>
       <Text style={styles.footer}>
@@ -50,7 +51,6 @@ const styles = StyleSheet.create({
   logo: {
     width: 300,
     height: 70,
-    resizeMode: "contain",
   },
   primaryColor: {
     color: "#007EB9",
