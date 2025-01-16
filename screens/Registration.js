@@ -13,7 +13,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Registration = ({ navigation }) => {
-  const [username, setUsername] = useState("");
+  const [loginName, setLoginName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [key, setKey] = useState("");
@@ -22,6 +22,7 @@ const Registration = ({ navigation }) => {
 
   useEffect(() => {
     StatusBar.setBarStyle("light-content");
+    StatusBar.setBackgroundColor("#4B48A5");
   }, []);
 
   useEffect(() => {
@@ -34,7 +35,7 @@ const Registration = ({ navigation }) => {
         const storedDetails = await AsyncStorage.getItem("userDetails");
         if (storedDetails) {
           const parsedDetails = JSON.parse(storedDetails);
-          setUsername(parsedDetails.username);
+          setLoginName(parsedDetails.loginName);
           setEmail(parsedDetails.email);
           setMobile(parsedDetails.mobile);
           setKey(parsedDetails.key);
@@ -109,13 +110,13 @@ const Registration = ({ navigation }) => {
   };
 
   const handleRegister = async () => {
-    if (!username || !email || !mobile || !key) {
+    if (!loginName || !email || !mobile || !key) {
       Alert.alert("Error", "All fields are required.");
       return;
     }
 
-    if (username.length < 3) {
-      Alert.alert("Error", "Please enter a Username.");
+    if (loginName.length < 3) {
+      Alert.alert("Error", "Please enter a login name.");
       return;
     }
 
@@ -134,7 +135,7 @@ const Registration = ({ navigation }) => {
       return;
     }
 
-    const userDetails = { username, email, mobile, key };
+    const userDetails = { loginName, email, mobile, key };
 
     try {
       // Remove existing user details from AsyncStorage
@@ -153,7 +154,7 @@ const Registration = ({ navigation }) => {
 
   const handleReset = async () => {
     // Clear the state values
-    setUsername("");
+    setLoginName("");
     setEmail("");
     setMobile("");
     setKey("");
@@ -166,6 +167,8 @@ const Registration = ({ navigation }) => {
       Alert.alert("Error", "Failed to reset user details.");
     }
   };
+
+  console.log("userdetails", loginName);
 
   return (
     <View style={styles.container}>
@@ -188,12 +191,13 @@ const Registration = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         <View>
-          <Text style={styles.label}>User Name</Text>
+          <Text style={styles.label}>Login Name</Text>
           <TextInput
             style={styles.input}
             placeholder="example (John Doe)"
-            value={username}
-            onChangeText={setUsername}
+            value={loginName}
+            maxLength={40}
+            onChangeText={setLoginName}
             placeholderTextColor="#aaa"
             editable={!isFormDisabled} // Disable if form is disabled
           />
@@ -223,7 +227,7 @@ const Registration = ({ navigation }) => {
           />
         </View>
         <View>
-          <Text style={styles.label}>Private Key</Text>
+          <Text style={styles.label}>secret key</Text>
           <TextInput
             style={styles.input}
             placeholder="5 digit key"
@@ -237,7 +241,7 @@ const Registration = ({ navigation }) => {
         </View>
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>
-            {!isFormDisabled ? "Submit" : "Next"}
+            {loginName === "" ? "Save" : "Update Details"}
           </Text>
         </TouchableOpacity>
       </ScrollView>

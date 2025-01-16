@@ -23,6 +23,7 @@ const CodeGeneration = ({ navigation }) => {
 
   useEffect(() => {
     StatusBar.setBarStyle("light-content");
+    StatusBar.setBackgroundColor("#4B48A5");
     const updateDateTime = () => {
       const currentDate = new Date();
 
@@ -128,7 +129,7 @@ const CodeGeneration = ({ navigation }) => {
   }, [expirationTime]);
 
   const generateCode = (userDetails) => {
-    const { username, email, mobile, key } = userDetails;
+    const { loginName, email, mobile, key } = userDetails;
 
     // Round the current timestamp to the nearest 5 minutes (300,000 ms)
     const fiveMinutesInMilliseconds = 5 * 60 * 1000;
@@ -138,7 +139,7 @@ const CodeGeneration = ({ navigation }) => {
 
     // Concatenate user details and the timestamp
     const inputString =
-      username.toLowerCase() +
+      loginName.toLowerCase() +
       email.toLowerCase() +
       mobile.toLowerCase() +
       key.toLowerCase() +
@@ -199,10 +200,10 @@ const CodeGeneration = ({ navigation }) => {
 
       <View style={styles.innercontainer}>
         <View style={styles.userInfo}>
-          <View>
+          <View style={styles.nameContainer}>
             <Text style={styles.welcome}>Welcome</Text>
-            <Text style={styles.userName}>
-              {userDetails && userDetails.username}
+            <Text style={styles.loginName}>
+              {userDetails && userDetails.loginName}
             </Text>
           </View>
           <View style={styles.dateBlock}>
@@ -239,13 +240,17 @@ const CodeGeneration = ({ navigation }) => {
             </TouchableOpacity>
           </>
         )}
-
-        <TouchableOpacity
-          style={styles.updateButton}
-          onPress={navigateToRegister}
-        >
-          <Text style={styles.buttonText}>Update Details</Text>
-        </TouchableOpacity>
+        {remainingTime === null ? (
+          <TouchableOpacity
+            style={styles.updateButton}
+            onPress={navigateToRegister}
+            disabled={remainingTime !== null}
+          >
+            <Text style={styles.buttonText}>Update Details</Text>
+          </TouchableOpacity>
+        ) : (
+         null
+        )}
       </View>
     </View>
   );
@@ -274,16 +279,20 @@ const styles = StyleSheet.create({
   userInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     marginBottom: 20,
   },
-  userName: {
+
+  nameContainer: {
+    width: "50%",
+  },
+  loginName: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#282796",
     textTransform: "uppercase",
   },
   dateBlock: {
+    width: "50%",
     alignItems: "flex-end",
     flexDirection: "column",
   },
@@ -307,7 +316,7 @@ const styles = StyleSheet.create({
   codeText: {
     fontSize: 56,
     fontWeight: "700",
-    marginTop: 100,
+    marginTop: 50,
     marginBottom: 54,
     textAlign: "center",
     color: "#282796",
@@ -315,7 +324,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 18,
-    marginTop: 100,
+    marginTop: 50,
     marginBottom: 77,
     color: "#333",
     textAlign: "center",
