@@ -194,7 +194,7 @@ const Registration = ({ navigation }) => {
           <Text style={styles.label}>Login Name</Text>
           <TextInput
             style={styles.input}
-            placeholder="example (John Doe)"
+            placeholder="login name"
             value={loginName}
             maxLength={40}
             onChangeText={setLoginName}
