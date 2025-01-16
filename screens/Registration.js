@@ -241,7 +241,7 @@ const Registration = ({ navigation }) => {
         </View>
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>
-            {loginName === "" ? "Save" : "Update Details"}
+            {loginName === "" ? "Save" : "Update"}
           </Text>
         </TouchableOpacity>
       </ScrollView>
