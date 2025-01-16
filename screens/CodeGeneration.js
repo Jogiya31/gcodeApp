@@ -7,11 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
   StatusBar,
-  Keyboard,
-  Pressable,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CryptoJS from "crypto-js";
@@ -26,6 +22,7 @@ const CodeGeneration = ({ navigation }) => {
   const [formattedTime, setFormattedTime] = useState(""); // State for formatted time
 
   useEffect(() => {
+    StatusBar.setBarStyle("light-content");
     const updateDateTime = () => {
       const currentDate = new Date();
 
@@ -50,38 +47,6 @@ const CodeGeneration = ({ navigation }) => {
     // Initial call to update the date and time immediately
     updateDateTime();
 
-    // Clean up the interval on component unmount
-    return () => clearInterval(intervalId);
-  }, []);
-
-  useEffect(() => {
-    // StatusBar.setBackgroundColor("#282796");
-    StatusBar.setBarStyle("light-content");
-  }, []);
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-
-    const fetchUserDetails = async () => {
-      try {
-        const storedDetails = await AsyncStorage.getItem("userDetails");
-        if (storedDetails) {
-          setUserDetails(JSON.parse(storedDetails));
-        } else {
-          Alert.alert("No user details found", "Please register first.");
-          navigation.navigate("Registration");
-        }
-      } catch (error) {
-        Alert.alert("Error", "Failed to load user details.");
-      }
-    };
-
-    fetchUserDetails();
-  }, [navigation]);
-
-  useEffect(() => {
     const fetchStoredCode = async () => {
       try {
         const storedCode = await AsyncStorage.getItem("generatedCode");
@@ -112,7 +77,32 @@ const CodeGeneration = ({ navigation }) => {
     };
 
     fetchStoredCode();
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+
+    const fetchUserDetails = async () => {
+      try {
+        const storedDetails = await AsyncStorage.getItem("userDetails");
+        if (storedDetails) {
+          setUserDetails(JSON.parse(storedDetails));
+        } else {
+          Alert.alert("No user details found", "Please register first.");
+          navigation.navigate("Registration");
+        }
+      } catch (error) {
+        Alert.alert("Error", "Failed to load user details.");
+      }
+    };
+
+    fetchUserDetails();
+  }, [navigation]);
 
   useEffect(() => {
     if (expirationTime) {
@@ -196,75 +186,68 @@ const CodeGeneration = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <Pressable onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-          <ImageBackground
-            source={require("../assets/mobileBG.png")}
-            style={styles.header}
-            resizeMode="stretch"
-          >
-            <View style={styles.headerInfo}>
-              <Text style={styles.headerText}>Generate Code</Text>
-            </View>
-          </ImageBackground>
+    <View style={styles.container}>
+      <ImageBackground
+        source={require("../assets/mobileBG.png")}
+        style={styles.header}
+        resizeMode="stretch"
+      >
+        <View style={styles.headerInfo}>
+          <Text style={styles.headerText}>Generate Code</Text>
+        </View>
+      </ImageBackground>
 
-          <View style={styles.innercontainer}>
-            <View style={styles.userInfo}>
-              <View>
-                <Text style={styles.welcome}>Welcome</Text>
-                <Text style={styles.userName}>
-                  {userDetails && userDetails.username}
-                </Text>
-              </View>
-              <View style={styles.dateBlock}>
-                <Text style={styles.date}>{formattedDate}</Text>
-                <Text style={styles.time}>{formattedTime}</Text>
-              </View>
-            </View>
-
-            {!code ? (
-              <Text style={styles.infoText}>
-                Press Generate Code to get your current code.
-              </Text>
-            ) : (
-              <Text style={styles.codeText}>{code}</Text>
-            )}
-
-            {loading ? (
-              <ActivityIndicator size="large" color="#4CAF50" />
-            ) : (
-              <>
-                <TouchableOpacity
-                  style={[
-                    styles.button,
-                    remainingTime !== null && { backgroundColor: "#999" },
-                  ]}
-                  onPress={handleGenerateCode}
-                  disabled={remainingTime !== null}
-                >
-                  <Text style={styles.buttonText}>
-                    {remainingTime !== null
-                      ? `Next Code Generate in ${formatTime(remainingTime)}`
-                      : "Generate Code"}
-                  </Text>
-                </TouchableOpacity>
-              </>
-            )}
-
-            <TouchableOpacity
-              style={styles.updateButton}
-              onPress={navigateToRegister}
-            >
-              <Text style={styles.buttonText}>Update Details</Text>
-            </TouchableOpacity>
+      <View style={styles.innercontainer}>
+        <View style={styles.userInfo}>
+          <View>
+            <Text style={styles.welcome}>Welcome</Text>
+            <Text style={styles.userName}>
+              {userDetails && userDetails.username}
+            </Text>
+          </View>
+          <View style={styles.dateBlock}>
+            <Text style={styles.date}>{formattedDate}</Text>
+            <Text style={styles.time}>{formattedTime}</Text>
           </View>
         </View>
-      </Pressable>
-    </KeyboardAvoidingView>
+
+        {!code ? (
+          <Text style={styles.infoText}>
+            Press Generate Code to get your current code.
+          </Text>
+        ) : (
+          <Text style={styles.codeText}>{code}</Text>
+        )}
+
+        {loading ? (
+          <ActivityIndicator size="large" color="#4CAF50" />
+        ) : (
+          <>
+            <TouchableOpacity
+              style={[
+                styles.button,
+                remainingTime !== null && { backgroundColor: "#999" },
+              ]}
+              onPress={handleGenerateCode}
+              disabled={remainingTime !== null}
+            >
+              <Text style={styles.buttonText}>
+                {remainingTime !== null
+                  ? `Next Code Generate in ${formatTime(remainingTime)}`
+                  : "Generate Code"}
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
+
+        <TouchableOpacity
+          style={styles.updateButton}
+          onPress={navigateToRegister}
+        >
+          <Text style={styles.buttonText}>Update Details</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 

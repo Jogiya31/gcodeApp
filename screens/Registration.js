@@ -5,14 +5,10 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Keyboard,
-  KeyboardAvoidingView,
   ScrollView,
   Alert,
   ImageBackground,
-  Platform,
   StatusBar,
-  Pressable,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -25,10 +21,8 @@ const Registration = ({ navigation }) => {
   const [remainingTime, setRemainingTime] = useState(null); // Stores remaining time for countdown
 
   useEffect(() => {
-    // StatusBar.setBackgroundColor("#282796");
     StatusBar.setBarStyle("light-content");
   }, []);
-
 
   useEffect(() => {
     navigation.setOptions({
@@ -174,102 +168,96 @@ const Registration = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <Pressable onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-          {/* Header Section */}
-          <ImageBackground
-            source={require("../assets/mobileBG.png")}
-            style={styles.header}
-            resizeMode="stretch"
-          >
-            <View style={styles.headerInfo}>
-              <Text style={styles.headerText}>Sign Up</Text>
-              <Text style={styles.info}>
-                Fill the details and speed up your login!
-              </Text>
-            </View>
-          </ImageBackground>
-
-          {/* Form Section */}
-          <ScrollView
-            contentContainerStyle={styles.form}
-            showsVerticalScrollIndicator={false}
-          >
-            <View>
-              <Text style={styles.label}>User Name</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Username"
-                value={username}
-                onChangeText={setUsername}
-                placeholderTextColor="#aaa"
-                editable={!isFormDisabled} // Disable if form is disabled
-              />
-            </View>
-            <View>
-              <Text style={styles.label}>Email ID</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                placeholderTextColor="#aaa"
-                editable={!isFormDisabled} // Disable if form is disabled
-              />
-            </View>
-            <View>
-              <Text style={styles.label}>Phone</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Mobile"
-                value={mobile}
-                onChangeText={setMobile}
-                keyboardType="phone-pad"
-                placeholderTextColor="#aaa"
-                editable={!isFormDisabled} // Disable if form is disabled
-              />
-            </View>
-            <View>
-              <Text style={styles.label}>Private Key</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Personal Key"
-                value={key}
-                onChangeText={setKey}
-                placeholderTextColor="#aaa"
-                editable={!isFormDisabled} // Disable if form is disabled
-              />
-            </View>
-            <TouchableOpacity style={styles.button} onPress={handleRegister}>
-              <Text style={styles.buttonText}>
-                {!isFormDisabled ? "Submit" : "Next"}
-              </Text>
-            </TouchableOpacity>
-          </ScrollView>
+    <View style={styles.container}>
+      <ImageBackground
+        source={require("../assets/mobileBG.png")}
+        style={styles.header}
+        resizeMode="stretch"
+      >
+        <View style={styles.headerInfo}>
+          <Text style={styles.headerText}>Sign Up</Text>
+          <Text style={styles.info}>
+            Fill the details and speed up your login!
+          </Text>
         </View>
-      </Pressable>
-    </KeyboardAvoidingView>
+      </ImageBackground>
+
+      {/* Form Section */}
+      <ScrollView
+        contentContainerStyle={styles.form}
+        showsVerticalScrollIndicator={false}
+      >
+        <View>
+          <Text style={styles.label}>User Name</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="example (John Doe)"
+            value={username}
+            onChangeText={setUsername}
+            placeholderTextColor="#aaa"
+            editable={!isFormDisabled} // Disable if form is disabled
+          />
+        </View>
+        <View>
+          <Text style={styles.label}>Email ID</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="example@nic.in"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            placeholderTextColor="#aaa"
+            editable={!isFormDisabled} // Disable if form is disabled
+          />
+        </View>
+        <View>
+          <Text style={styles.label}>Phone</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="0123456789"
+            value={mobile}
+            onChangeText={setMobile}
+            keyboardType="phone-pad"
+            placeholderTextColor="#aaa"
+            editable={!isFormDisabled} // Disable if form is disabled
+          />
+        </View>
+        <View>
+          <Text style={styles.label}>Private Key</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="5 digit key"
+            value={key}
+            maxLength={5}
+            onChangeText={setKey}
+            placeholderTextColor="#aaa"
+            keyboardType="phone-pad"
+            editable={!isFormDisabled} // Disable if form is disabled
+          />
+        </View>
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+          <Text style={styles.buttonText}>
+            {!isFormDisabled ? "Submit" : "Next"}
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
+    flex: 1,
     backgroundColor: "#f5f6fa",
   },
   header: {
     height: 220,
     justifyContent: "center",
-    paddingLeft: 30,
-    width:"100%"
+    width: "100%",
   },
   headerInfo: {
     marginTop: -20,
+    paddingLeft: 30,
   },
   headerText: {
     color: "#fff",
@@ -305,7 +293,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#00b652",
     padding: 15,
     borderRadius: 10,
-    marginTop:20,
+    marginTop: 20,
     alignItems: "center",
     justifyContent: "center",
   },
