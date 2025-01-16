@@ -17,6 +17,7 @@ const Registration = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [key, setKey] = useState("");
+  const [storedData, setStoredData] = useState(null);
   const [isFormDisabled, setIsFormDisabled] = useState(false); // State to track form disabling
   const [remainingTime, setRemainingTime] = useState(null); // Stores remaining time for countdown
 
@@ -35,6 +36,7 @@ const Registration = ({ navigation }) => {
           setEmail(parsedDetails.email);
           setMobile(parsedDetails.mobile);
           setKey(parsedDetails.key);
+          setStoredData(parsedDetails);
         }
       } catch (error) {
         Alert.alert("Error", "Failed to load user details.");
@@ -214,6 +216,7 @@ const Registration = ({ navigation }) => {
             style={styles.input}
             placeholder="0123456789"
             value={mobile}
+            maxLength={10}
             onChangeText={setMobile}
             keyboardType="phone-pad"
             placeholderTextColor="#aaa"
@@ -221,9 +224,9 @@ const Registration = ({ navigation }) => {
           />
         </View>
         <View>
-          <Text style={styles.label}>secret key</Text>
+          <Text style={styles.label}>Secret key</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input]}
             placeholder="5 digit key"
             value={key}
             maxLength={5}
@@ -233,9 +236,21 @@ const Registration = ({ navigation }) => {
             editable={!isFormDisabled} // Disable if form is disabled
           />
         </View>
-        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            (loginName === "" ||
+              email === "" ||
+              mobile === "" ||
+              key === "") && { backgroundColor: "#999" },
+          ]}
+          onPress={handleRegister}
+          disabled={
+            loginName === "" || email === "" || mobile === "" || key === ""
+          }
+        >
           <Text style={styles.buttonText}>
-            {loginName === "" ? "Save" : "Update"}
+            {storedData === null ? "Save" : "Update"}
           </Text>
         </TouchableOpacity>
       </ScrollView>

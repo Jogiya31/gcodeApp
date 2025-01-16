@@ -24,6 +24,7 @@ const CodeGeneration = ({ navigation }) => {
   useEffect(() => {
     StatusBar.setBarStyle("light-content");
     StatusBar.setBackgroundColor("#4B48A5");
+    
     const updateDateTime = () => {
       const currentDate = new Date();
 
