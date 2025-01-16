@@ -266,6 +266,7 @@ const styles = StyleSheet.create({
     height: 220,
     justifyContent: "center",
     paddingLeft: 30,
+    width:"100%"
   },
   headerInfo: {
     marginTop: -20,
