@@ -108,45 +108,56 @@ const Registration = ({ navigation }) => {
   };
 
   const handleRegister = async () => {
-    if (!loginName || !email || !mobile || !key) {
-      Alert.alert("Error", "All fields are required.");
-      return;
-    }
-
-    if (loginName.length < 3) {
-      Alert.alert("Error", "Please enter a login name.");
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      Alert.alert("Error", "Please enter a valid email address.");
-      return;
-    }
-
-    if (!validateMobile(mobile)) {
-      Alert.alert("Error", "Please enter a valid Phone number");
-      return;
-    }
-
-    if (!validateKey(key)) {
-      Alert.alert("Error", "Please enter a Key");
-      return;
-    }
-
-    const userDetails = { loginName, email, mobile, key };
-
-    try {
-      // Remove existing user details from AsyncStorage
-      await AsyncStorage.removeItem("userDetails");
-
-      // Save the new user details in AsyncStorage
-      await AsyncStorage.setItem("userDetails", JSON.stringify(userDetails));
-      if (!isFormDisabled) {
-        Alert.alert("Success", "Registration successful.");
+    if (remainingTime > 0) {
+      Alert.alert("Message", "Please wait, try again after code expires.", [
+        {
+          text: "Cancel",
+          onPress: () => {},
+          style: "cancel",
+        },
+        { text: "OK", onPress: () => navigation.navigate("CodeGeneration") },
+      ]);
+    } else {
+      if (!loginName || !email || !mobile || !key) {
+        Alert.alert("Error", "All fields are required.");
+        return;
       }
-      navigation.navigate("CodeGeneration");
-    } catch (error) {
-      Alert.alert("Error", "Failed to save user details.");
+
+      if (loginName.length < 3) {
+        Alert.alert("Error", "Please enter a login name.");
+        return;
+      }
+
+      if (!validateEmail(email)) {
+        Alert.alert("Error", "Please enter a valid email address.");
+        return;
+      }
+
+      if (!validateMobile(mobile)) {
+        Alert.alert("Error", "Please enter a valid Phone number");
+        return;
+      }
+
+      if (!validateKey(key)) {
+        Alert.alert("Error", "Please enter a Key");
+        return;
+      }
+
+      const userDetails = { loginName, email, mobile, key };
+
+      try {
+        // Remove existing user details from AsyncStorage
+        await AsyncStorage.removeItem("userDetails");
+
+        // Save the new user details in AsyncStorage
+        await AsyncStorage.setItem("userDetails", JSON.stringify(userDetails));
+        if (!isFormDisabled) {
+          Alert.alert("Success", "Registration successful.");
+        }
+        navigation.navigate("CodeGeneration");
+      } catch (error) {
+        Alert.alert("Error", "Failed to save user details.");
+      }
     }
   };
 
