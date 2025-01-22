@@ -108,7 +108,7 @@ const Registration = ({ navigation }) => {
   };
 
   const handleRegister = async () => {
-    if (remainingTime > 0) {
+    if (remainingTime !== null) {
       Alert.alert("Message", "Please wait, try again after code expires.", [
         {
           text: "Cancel",

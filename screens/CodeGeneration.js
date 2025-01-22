@@ -176,7 +176,11 @@ const CodeGeneration = ({ navigation }) => {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${minutes}:${secs.toString().padStart(2, "0")}`;
+    if(minutes > 0){
+      return `${minutes} min ${secs.toString().padStart(2, "0")} sec`;
+    }else{
+      return `${secs.toString().padStart(2, "0")} sec`;
+    }
   };
 
   const navigateToRegister = () => {
@@ -231,7 +235,7 @@ const CodeGeneration = ({ navigation }) => {
             >
               <Text style={styles.buttonText}>
                 {remainingTime !== null
-                  ? `Code expires in ${formatTime(remainingTime)} sec`
+                  ? `Code expires in ${formatTime(remainingTime)}`
                   : "Generate Code"}
               </Text>
             </TouchableOpacity>
