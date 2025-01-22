@@ -25,38 +25,40 @@ const Registration = ({ navigation }) => {
     StatusBar.setBarStyle("light-content");
     StatusBar.setBackgroundColor("#4B48A5");
     fetchUserDetails();
-    fetchExpirationTime();
   }, []);
 
-  useEffect(() => {
+  useEffect(() => {  
+    const fetchExpirationTime = async () => {
+      try {
+        const storedExpiration = await AsyncStorage.getItem("expirationTime");
+
+        if (storedExpiration) {
+          const currentTime = new Date().getTime();
+          const parsedExpirationTime = parseInt(storedExpiration);
+
+          if (parsedExpirationTime > currentTime) {
+            // Calculate the remaining time
+            setRemainingTime(
+              Math.max(
+                0,
+                Math.floor((parsedExpirationTime - currentTime) / 1000)
+              )
+            );
+            setIsFormDisabled(true); // Disable form until timer expires
+          } else {
+            // If expired, enable the form
+            setIsFormDisabled(false);
+            setRemainingTime(null);
+          }
+        }
+      } catch (error) {
+        Alert.alert("Error", "Failed to load expiration time.");
+      }
+    };
+
     fetchUserDetails();
     fetchExpirationTime();
   }, [navigation]);
-
-  const fetchExpirationTime = async () => {
-    try {
-      const storedExpiration = await AsyncStorage.getItem("expirationTime");
-
-      if (storedExpiration) {
-        const currentTime = new Date().getTime();
-        const parsedExpirationTime = parseInt(storedExpiration);
-
-        if (parsedExpirationTime > currentTime) {
-          // Calculate the remaining time
-          setRemainingTime(
-            Math.max(0, Math.floor((parsedExpirationTime - currentTime) / 1000))
-          );
-          setIsFormDisabled(true); // Disable form until timer expires
-        } else {
-          // If expired, enable the form
-          setIsFormDisabled(false);
-          setRemainingTime(null);
-        }
-      }
-    } catch (error) {
-      Alert.alert("Error", "Failed to load expiration time.");
-    }
-  };
 
   const fetchUserDetails = async () => {
     try {
@@ -107,7 +109,7 @@ const Registration = ({ navigation }) => {
   };
 
   const handleRegister = async () => {
-    if (remainingTime !== null) {
+    if (storedData !== null) {
       Alert.alert("Message", "Please wait, try again after code expires.", [
         {
           text: "Cancel",
