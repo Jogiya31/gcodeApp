@@ -28,22 +28,7 @@ const Registration = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const storedDetails = await AsyncStorage.getItem("userDetails");
-        if (storedDetails) {
-          const parsedDetails = JSON.parse(storedDetails);
-          setLoginName(parsedDetails.loginName);
-          setEmail(parsedDetails.email);
-          setMobile(parsedDetails.mobile);
-          setKey(parsedDetails.key);
-          setStoredData(parsedDetails);
-        }
-      } catch (error) {
-        Alert.alert("Error", "Failed to load user details.");
-      }
-    };
-
+  
     const fetchExpirationTime = async () => {
       try {
         const storedExpiration = await AsyncStorage.getItem("expirationTime");
@@ -75,6 +60,22 @@ const Registration = ({ navigation }) => {
     fetchUserDetails();
     fetchExpirationTime();
   }, [navigation]);
+
+  const fetchUserDetails = async () => {
+    try {
+      const storedDetails = await AsyncStorage.getItem("userDetails");
+      if (storedDetails) {
+        const parsedDetails = JSON.parse(storedDetails);
+        setLoginName(parsedDetails.loginName);
+        setEmail(parsedDetails.email);
+        setMobile(parsedDetails.mobile);
+        setKey(parsedDetails.key);
+        setStoredData(parsedDetails);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to load user details.");
+    }
+  };
 
   useEffect(() => {
     if (remainingTime !== null) {
