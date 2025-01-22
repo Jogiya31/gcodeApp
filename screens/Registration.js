@@ -24,6 +24,7 @@ const Registration = ({ navigation }) => {
   useEffect(() => {
     StatusBar.setBarStyle("light-content");
     StatusBar.setBackgroundColor("#4B48A5");
+    fetchUserDetails();
   }, []);
 
   useEffect(() => {
@@ -76,7 +77,7 @@ const Registration = ({ navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    if (remainingTime !== null && remainingTime > 0) {
+    if (remainingTime !== null) {
       const timer = setInterval(() => {
         setRemainingTime((prevTime) => {
           const updatedTime = prevTime - 1;
