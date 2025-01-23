@@ -25,7 +25,6 @@ const Registration = ({ navigation }) => {
     StatusBar.setBarStyle("light-content");
     StatusBar.setBackgroundColor("#4B48A5");
     fetchUserDetails();
-    fetchExpirationTime();
   }, []);
 
   useEffect(() => {
@@ -107,6 +106,7 @@ const Registration = ({ navigation }) => {
   };
 
   const handleRegister = async () => {
+    fetchExpirationTime();
     if (remainingTime !== null) {
       Alert.alert("Message", "Please wait, try again after code expires.", [
         {
@@ -157,22 +157,6 @@ const Registration = ({ navigation }) => {
       } catch (error) {
         Alert.alert("Error", "Failed to save user details.");
       }
-    }
-  };
-
-  const handleReset = async () => {
-    // Clear the state values
-    setLoginName("");
-    setEmail("");
-    setMobile("");
-    setKey("");
-
-    // Clear the user details from AsyncStorage
-    try {
-      await AsyncStorage.removeItem("userDetails");
-      Alert.alert("Success", "Form has been reset.");
-    } catch (error) {
-      Alert.alert("Error", "Failed to reset user details.");
     }
   };
 
