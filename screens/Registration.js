@@ -24,59 +24,57 @@ const Registration = ({ navigation }) => {
   useEffect(() => {
     StatusBar.setBarStyle("light-content");
     StatusBar.setBackgroundColor("#4B48A5");
+    fetchUserDetails();
   }, []);
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const storedDetails = await AsyncStorage.getItem("userDetails");
-        if (storedDetails) {
-          const parsedDetails = JSON.parse(storedDetails);
-          setLoginName(parsedDetails.loginName);
-          setEmail(parsedDetails.email);
-          setMobile(parsedDetails.mobile);
-          setKey(parsedDetails.key);
-          setStoredData(parsedDetails);
-        }
-      } catch (error) {
-        Alert.alert("Error", "Failed to load user details.");
-      }
-    };
-
-    const fetchExpirationTime = async () => {
-      try {
-        const storedExpiration = await AsyncStorage.getItem("expirationTime");
-
-        if (storedExpiration) {
-          const currentTime = new Date().getTime();
-          const parsedExpirationTime = parseInt(storedExpiration);
-
-          if (parsedExpirationTime > currentTime) {
-            // Calculate the remaining time
-            setRemainingTime(
-              Math.max(
-                0,
-                Math.floor((parsedExpirationTime - currentTime) / 1000)
-              )
-            );
-            setIsFormDisabled(true); // Disable form until timer expires
-          } else {
-            // If expired, enable the form
-            setIsFormDisabled(false);
-            setRemainingTime(null);
-          }
-        }
-      } catch (error) {
-        Alert.alert("Error", "Failed to load expiration time.");
-      }
-    };
-
     fetchUserDetails();
     fetchExpirationTime();
   }, [navigation]);
 
+  const fetchExpirationTime = async () => {
+    try {
+      const storedExpiration = await AsyncStorage.getItem("expirationTime");
+
+      if (storedExpiration) {
+        const currentTime = new Date().getTime();
+        const parsedExpirationTime = parseInt(storedExpiration);
+
+        if (parsedExpirationTime > currentTime) {
+          // Calculate the remaining time
+          setRemainingTime(
+            Math.max(0, Math.floor((parsedExpirationTime - currentTime) / 1000))
+          );
+          setIsFormDisabled(true); // Disable form until timer expires
+        } else {
+          // If expired, enable the form
+          setIsFormDisabled(false);
+          setRemainingTime(null);
+        }
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to load expiration time.");
+    }
+  };
+
+  const fetchUserDetails = async () => {
+    try {
+      const storedDetails = await AsyncStorage.getItem("userDetails");
+      if (storedDetails) {
+        const parsedDetails = JSON.parse(storedDetails);
+        setLoginName(parsedDetails.loginName);
+        setEmail(parsedDetails.email);
+        setMobile(parsedDetails.mobile);
+        setKey(parsedDetails.key);
+        setStoredData(parsedDetails);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to load user details.");
+    }
+  };
+
   useEffect(() => {
-    if (remainingTime !== null && remainingTime > 0) {
+    if (remainingTime !== null) {
       const timer = setInterval(() => {
         setRemainingTime((prevTime) => {
           const updatedTime = prevTime - 1;
@@ -108,6 +106,7 @@ const Registration = ({ navigation }) => {
   };
 
   const handleRegister = async () => {
+    fetchExpirationTime();
     if (remainingTime !== null) {
       Alert.alert("Message", "Please wait, try again after code expires.", [
         {
@@ -158,22 +157,6 @@ const Registration = ({ navigation }) => {
       } catch (error) {
         Alert.alert("Error", "Failed to save user details.");
       }
-    }
-  };
-
-  const handleReset = async () => {
-    // Clear the state values
-    setLoginName("");
-    setEmail("");
-    setMobile("");
-    setKey("");
-
-    // Clear the user details from AsyncStorage
-    try {
-      await AsyncStorage.removeItem("userDetails");
-      Alert.alert("Success", "Form has been reset.");
-    } catch (error) {
-      Alert.alert("Error", "Failed to reset user details.");
     }
   };
 
