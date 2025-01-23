@@ -24,7 +24,7 @@ const CodeGeneration = ({ navigation }) => {
   useEffect(() => {
     StatusBar.setBarStyle("light-content");
     StatusBar.setBackgroundColor("#4B48A5");
-    
+
     const updateDateTime = () => {
       const currentDate = new Date();
 
@@ -176,9 +176,9 @@ const CodeGeneration = ({ navigation }) => {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    if(minutes > 0){
+    if (minutes > 0) {
       return `${minutes} min ${secs.toString().padStart(2, "0")} sec`;
-    }else{
+    } else {
       return `${secs.toString().padStart(2, "0")} sec`;
     }
   };
@@ -319,7 +319,10 @@ const styles = StyleSheet.create({
     marginBottom: 54,
     textAlign: "center",
     color: "#282796",
-    textShadow: "2px 4px 4px rgba(46, 91, 173, 0.6)",
+    // textShadow: "2px 4px 4px rgba(46, 91, 173, 0.6)",
+    textShadowColor: "rgba(46, 91, 173, 0.6)", // Shadow color
+    textShadowOffset: { width: 2, height: 4 }, // Shadow offset
+    textShadowRadius: 4, // Shadow blur radius
   },
   infoText: {
     fontSize: 18,
