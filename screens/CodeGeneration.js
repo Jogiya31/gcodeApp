@@ -20,6 +20,9 @@ const CodeGeneration = ({ navigation }) => {
   const [remainingTime, setRemainingTime] = useState(null);
   const [formattedDate, setFormattedDate] = useState(""); // State for formatted date
   const [formattedTime, setFormattedTime] = useState(""); // State for formatted time
+  const [currentTime, setcurrentTime] = useState("");
+  const [Rounded, setRounded] = useState("");
+  const [Previous, setPrevious] = useState("");
 
   useEffect(() => {
     StatusBar.setBarStyle("light-content");
@@ -126,18 +129,22 @@ const CodeGeneration = ({ navigation }) => {
   }, [expirationTime]);
 
   const generateCode = (userDetails) => {
-    const {
-      //  loginName,
-      email,
-      mobile,
-      key,
-    } = userDetails;
+    const { email, mobile, key } = userDetails;
 
     // Round the current timestamp to the nearest 5 minutes (300,000 ms)
     const fiveMinutesInMilliseconds = 5 * 60 * 1000;
-    const timestamp =
+
+    // Current timestamp rounded to the nearest 5 minutes
+    const currentTimestamp =
       Math.round(Date.now() / fiveMinutesInMilliseconds) *
       fiveMinutesInMilliseconds;
+
+    // Previous timestamp (5 minutes before current timestamp)
+    const previousTimestamp = currentTimestamp - fiveMinutesInMilliseconds;
+
+    setcurrentTime(Date.now());
+    setRounded(currentTimestamp);
+    setPrevious(previousTimestamp);
 
     // Concatenate user details and the timestamp
     const inputString =
@@ -145,7 +152,7 @@ const CodeGeneration = ({ navigation }) => {
       email.toLowerCase() +
       mobile.toLowerCase() +
       key.toLowerCase() +
-      timestamp;
+      currentTimestamp;
 
     // Generate SHA256 hash
     const hash = CryptoJS.SHA256(inputString).toString(CryptoJS.enc.Hex);
@@ -210,7 +217,7 @@ const CodeGeneration = ({ navigation }) => {
           <View style={styles.nameContainer}>
             <Text style={styles.welcome}>Welcome</Text>
             <Text style={styles.loginName}>
-              {userDetails && userDetails.email.split('@')[0]}
+              {userDetails && userDetails.email.split("@")[0]}
             </Text>
           </View>
           <View style={styles.dateBlock}>
@@ -226,7 +233,11 @@ const CodeGeneration = ({ navigation }) => {
         ) : (
           <Text style={styles.codeText}>{code}</Text>
         )}
-
+        <View>
+          <Text>Curr=={currentTime}</Text>
+          <Text>Rounded== {Rounded}</Text>
+          <Text>Previous== {Previous}</Text>
+        </View>
         {loading ? (
           <ActivityIndicator size="large" color="#4CAF50" />
         ) : (
