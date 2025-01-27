@@ -149,10 +149,8 @@ const CodeGeneration = ({ navigation }) => {
     // Concatenate user details and the timestamp
     const inputString =
       // loginName.toLowerCase() +
-      email.toLowerCase() +
-      mobile.toLowerCase() +
-      key.toLowerCase() +
-      currentTimestamp;
+      email.toLowerCase() + mobile.toLowerCase() + key.toLowerCase();
+    // currentTimestamp;
 
     // Generate SHA256 hash
     const hash = CryptoJS.SHA256(inputString).toString(CryptoJS.enc.Hex);
