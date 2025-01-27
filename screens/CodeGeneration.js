@@ -126,17 +126,22 @@ const CodeGeneration = ({ navigation }) => {
   }, [expirationTime]);
 
   const generateCode = (userDetails) => {
-    const { loginName, email, mobile, key } = userDetails;
+    const {
+      //  loginName,
+      email,
+      mobile,
+      key,
+    } = userDetails;
 
     // Round the current timestamp to the nearest 5 minutes (300,000 ms)
-    const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+    const fiveMinutesInMilliseconds = 1 * 60 * 1000;
     const timestamp =
       Math.round(Date.now() / fiveMinutesInMilliseconds) *
       fiveMinutesInMilliseconds;
 
     // Concatenate user details and the timestamp
     const inputString =
-      loginName.toLowerCase() +
+      // loginName.toLowerCase() +
       email.toLowerCase() +
       mobile.toLowerCase() +
       key.toLowerCase() +
@@ -162,7 +167,7 @@ const CodeGeneration = ({ navigation }) => {
       setLoading(true);
       const newCode = generateCode(userDetails);
 
-      const expiration = new Date().getTime() + 5 * 60 * 1000;
+      const expiration = new Date().getTime() + 1 * 60 * 1000;
       setExpirationTime(expiration);
       setCode(newCode);
 
@@ -204,7 +209,7 @@ const CodeGeneration = ({ navigation }) => {
           <View style={styles.nameContainer}>
             <Text style={styles.welcome}>Welcome</Text>
             <Text style={styles.loginName}>
-              {userDetails && userDetails.loginName}
+              {userDetails && userDetails.email.split('@')[0]}
             </Text>
           </View>
           <View style={styles.dateBlock}>
