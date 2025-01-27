@@ -20,7 +20,6 @@ const CodeGeneration = ({ navigation }) => {
   const [remainingTime, setRemainingTime] = useState(null);
   const [formattedDate, setFormattedDate] = useState(""); // State for formatted date
   const [formattedTime, setFormattedTime] = useState(""); // State for formatted time
-  const [currentTime, setcurrentTime] = useState("");
   const [Rounded, setRounded] = useState("");
   const [Previous, setPrevious] = useState("");
 
@@ -129,10 +128,7 @@ const CodeGeneration = ({ navigation }) => {
   }, [expirationTime]);
 
   const generateCode = (userDetails) => {
-    // const { email, mobile, key } = userDetails;
-    let email = "shivak.shukla@nic.in";
-    let mobile = "8800773399";
-    let key = "25369";
+    const { email, mobile, key } = userDetails;
 
     // Round the current timestamp to the nearest 5 minutes (300,000 ms)
     const fiveMinutesInMilliseconds = 5 * 60 * 1000;
@@ -145,20 +141,23 @@ const CodeGeneration = ({ navigation }) => {
     // Previous timestamp (5 minutes before current timestamp)
     const previousTimestamp = currentTimestamp - fiveMinutesInMilliseconds;
 
-    setcurrentTime(Date.now());
     setRounded(currentTimestamp);
     setPrevious(previousTimestamp);
 
-    // Concatenate user details and the timestamp
+    // Concatenate user details
     const inputString =
-      // loginName.toLowerCase() +
-      email.toLowerCase() + mobile.toLowerCase() + key.toLowerCase();
+      email.toLowerCase() +
+      mobile.toLowerCase() +
+      key.toLowerCase() +
+      currentTimestamp;
 
     // Generate SHA256 hash
     const hash = CryptoJS.SHA256(inputString).toString(CryptoJS.enc.Hex);
-
-    // Convert hash to a 5-digit number between 10000 and 99999
+    
+    // Take first 8 hex chars (4 bytes), parse as an integer
     const hashInt = parseInt(hash.substring(0, 8), 16);
+
+    // Convert to 5-digit code
     const fiveDigitCode = (hashInt % 90000) + 10000;
 
     return fiveDigitCode.toString();
@@ -236,7 +235,6 @@ const CodeGeneration = ({ navigation }) => {
           <Text style={styles.codeText}>{code}</Text>
         )}
         <View>
-          <Text>Curr=={currentTime}</Text>
           <Text>Rounded== {Rounded}</Text>
           <Text>Previous== {Previous}</Text>
         </View>
