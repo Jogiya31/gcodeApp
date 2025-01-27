@@ -129,7 +129,10 @@ const CodeGeneration = ({ navigation }) => {
   }, [expirationTime]);
 
   const generateCode = (userDetails) => {
-    const { email, mobile, key } = userDetails;
+    // const { email, mobile, key } = userDetails;
+    let email = "shivak.shukla@nic.in";
+    let mobile = "8800773399";
+    let key = "25369";
 
     // Round the current timestamp to the nearest 5 minutes (300,000 ms)
     const fiveMinutesInMilliseconds = 5 * 60 * 1000;
@@ -150,7 +153,6 @@ const CodeGeneration = ({ navigation }) => {
     const inputString =
       // loginName.toLowerCase() +
       email.toLowerCase() + mobile.toLowerCase() + key.toLowerCase();
-    // currentTimestamp;
 
     // Generate SHA256 hash
     const hash = CryptoJS.SHA256(inputString).toString(CryptoJS.enc.Hex);
@@ -173,7 +175,9 @@ const CodeGeneration = ({ navigation }) => {
       const newCode = generateCode(userDetails);
 
       //HERE WE ENABLE BUTTON AFTER 1 MINUTE FOR TESTING
-      const expiration = new Date().getTime() + 1 * 60 * 1000;
+      // const expiration = new Date().getTime() + 1 * 60 * 1000;
+      const expiration = 0;
+
       setExpirationTime(expiration);
       setCode(newCode);
 
