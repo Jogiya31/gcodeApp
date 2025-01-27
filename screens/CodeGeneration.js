@@ -134,7 +134,7 @@ const CodeGeneration = ({ navigation }) => {
     } = userDetails;
 
     // Round the current timestamp to the nearest 5 minutes (300,000 ms)
-    const fiveMinutesInMilliseconds = 1 * 60 * 1000;
+    const fiveMinutesInMilliseconds = 5 * 60 * 1000;
     const timestamp =
       Math.round(Date.now() / fiveMinutesInMilliseconds) *
       fiveMinutesInMilliseconds;
@@ -167,6 +167,7 @@ const CodeGeneration = ({ navigation }) => {
       setLoading(true);
       const newCode = generateCode(userDetails);
 
+      //HERE WE ENABLE BUTTON AFTER 1 MINUTE FOR TESTING
       const expiration = new Date().getTime() + 1 * 60 * 1000;
       setExpirationTime(expiration);
       setCode(newCode);
