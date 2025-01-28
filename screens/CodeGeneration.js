@@ -138,8 +138,7 @@ const CodeGeneration = ({ navigation }) => {
       fiveMinutesInMilliseconds;
 
     setRounded(currentTimestamp);
-    setPrevious(currentTimestamp - fiveMinutesInMilliseconds);
-
+    
     // Concatenate user details
     const inputString =
       email.toLowerCase() +
@@ -238,14 +237,11 @@ const CodeGeneration = ({ navigation }) => {
             input string ==
             {userDetails && userDetails.email}
             {userDetails && userDetails.mobile}
+            {userDetails && userDetails.key}
             {Math.floor(Date.now() / (5 * 60 * 1000)) * (5 * 60 * 1000)}
           </Text>
           <Text>
             Rounded== {Rounded} / {moment(Rounded).format("YYYY-MM-DD HH:mm")}
-          </Text>
-          <Text>
-            Previous== {Previous} /{" "}
-            {moment(Previous).format("YYYY-MM-DD HH:mm")}
           </Text>
         </View>
         {loading ? (
