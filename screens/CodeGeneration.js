@@ -136,39 +136,32 @@ const CodeGeneration = ({ navigation }) => {
     const istOffset = 5.5 * 60 * 60 * 1000;
     const istTimestamp = utcTimestamp + istOffset;
 
-    // Round the IST timestamp to the nearest 5 minutes
-    const fiveMinutesInMilliseconds = 5 * 60 * 1000;
-
+    // Always round down to the nearest 5 minutes
     const roundedIstTimestamp =
-      Math.floor(istTimestamp / fiveMinutesInMilliseconds) *
-      fiveMinutesInMilliseconds;
+      Math.floor(istTimestamp / (5 * 60 * 1000)) * (5 * 60 * 1000);
 
-    const formatedIST = moment(roundedIstTimestamp).format("YYYY-MM-DD HH:mm");
+    // Format timestamp to match C# output
+    const formattedIST = moment(roundedIstTimestamp).format("YYYY-MM-DD HH:mm");
 
-    setrounded(formatedIST);
+    // Concatenate user details
+    const inputString = email.toLowerCase() + mobile + key + formattedIST;
 
-    // Concatenate user details with the rounded IST timestamp
-    const inputString =
-      email.toLowerCase() +
-      mobile.toString() +
-      key.toString() +
-      formatedIST.toString();
-
+    setrounded(formattedIST);
     setinput(inputString);
 
-    // Convert to UTF-8 bytes explicitly
+    // Encode to UTF-8 explicitly (ensuring it matches C#)
     const utf8Input = new TextEncoder().encode(inputString);
 
-    // Generate SHA256 hash
+    // Generate SHA-256 hash
     const hash = CryptoJS.SHA256(CryptoJS.enc.Utf8.parse(inputString)).toString(
       CryptoJS.enc.Hex
     );
 
-    // Take the first 8 hex characters and parse as integer
-    const hashInt = parseInt(hash.substring(0, 8), 16);
+    // Ensure unsigned integer representation
+    const hashInt = parseInt(hash.substring(0, 8), 16) >>> 0;
 
     // Convert to 5-digit code
-    const fiveDigitCode = (Math.abs(hashInt) % 90000) + 10000;
+    const fiveDigitCode = (hashInt % 90000) + 10000;
 
     return fiveDigitCode.toString();
   };
