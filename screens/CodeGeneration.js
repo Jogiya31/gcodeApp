@@ -21,8 +21,8 @@ const CodeGeneration = ({ navigation }) => {
   const [remainingTime, setRemainingTime] = useState(null);
   const [formattedDate, setFormattedDate] = useState(""); // State for formatted date
   const [formattedTime, setFormattedTime] = useState(""); // State for formatted time
-  const [Rounded, setRounded] = useState("");
-  const [Previous, setPrevious] = useState("");
+  const [rounded, setrounded] = useState("");
+  const [input, setinput] = useState("");
 
   useEffect(() => {
     StatusBar.setBarStyle("light-content");
@@ -131,26 +131,38 @@ const CodeGeneration = ({ navigation }) => {
   const generateCode = (userDetails) => {
     const { email, mobile, key } = userDetails;
 
-    // Round timestamp to nearest 5 minutes
+    const now = new Date();
+    const utcTimestamp = now.getTime() + now.getTimezoneOffset() * 60000;
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const istTimestamp = utcTimestamp + istOffset;
+
+    // Round the IST timestamp to the nearest 5 minutes
     const fiveMinutesInMilliseconds = 5 * 60 * 1000;
-    const currentTimestamp =
-      Math.floor(Date.now() / fiveMinutesInMilliseconds) *
+
+    const roundedIstTimestamp =
+      Math.floor(istTimestamp / fiveMinutesInMilliseconds) *
       fiveMinutesInMilliseconds;
 
-    setRounded(currentTimestamp);
-    
-    // Concatenate user details
+    const formatedIST = moment(roundedIstTimestamp).format("YYYY-MM-DD HH:mm");
+
+    setrounded(formatedIST);
+
+    // Concatenate user details with the rounded IST timestamp
     const inputString =
       email.toLowerCase() +
       mobile.toString() +
       key.toString() +
-      currentTimestamp.toString();
+      formatedIST.toString();
 
-    // Convert to UTF-8 before hashing
-    const utf8Input = CryptoJS.enc.Utf8.parse(inputString);
+    setinput(inputString);
+
+    // Convert to UTF-8 bytes explicitly
+    const utf8Input = new TextEncoder().encode(inputString);
 
     // Generate SHA256 hash
-    const hash = CryptoJS.SHA256(utf8Input).toString(CryptoJS.enc.Hex);
+    const hash = CryptoJS.SHA256(CryptoJS.enc.Utf8.parse(inputString)).toString(
+      CryptoJS.enc.Hex
+    );
 
     // Take the first 8 hex characters and parse as integer
     const hashInt = parseInt(hash.substring(0, 8), 16);
@@ -171,9 +183,8 @@ const CodeGeneration = ({ navigation }) => {
       setLoading(true);
       const newCode = generateCode(userDetails);
 
-      //HERE WE ENABLE BUTTON AFTER 1 MINUTE FOR TESTING
-      // const expiration = new Date().getTime() + 1 * 60 * 1000;
-      const expiration = 0;
+      //HERE WE DISABLE BUTTON FOR 1 MINUTE for testing
+      const expiration = new Date().getTime() + 1 * 60 * 1000;
 
       setExpirationTime(expiration);
       setCode(newCode);
@@ -224,7 +235,10 @@ const CodeGeneration = ({ navigation }) => {
             <Text style={styles.date}>{formattedDate}</Text>
           </View>
         </View>
-
+        <View>
+          <Text>Timeformat = {rounded}</Text>
+          <Text>InputString = {input}</Text>
+        </View>
         {!code ? (
           <Text style={styles.infoText}>
             Press Generate Code to get your current code.
@@ -232,18 +246,6 @@ const CodeGeneration = ({ navigation }) => {
         ) : (
           <Text style={styles.codeText}>{code}</Text>
         )}
-        <View>
-          <Text>
-            input string ==
-            {userDetails && userDetails.email}
-            {userDetails && userDetails.mobile}
-            {userDetails && userDetails.key}
-            {Math.floor(Date.now() / (5 * 60 * 1000)) * (5 * 60 * 1000)}
-          </Text>
-          <Text>
-            Rounded== {Rounded} / {moment(Rounded).format("YYYY-MM-DD HH:mm")}
-          </Text>
-        </View>
         {loading ? (
           <ActivityIndicator size="large" color="#4CAF50" />
         ) : (
