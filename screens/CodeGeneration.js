@@ -228,10 +228,10 @@ const CodeGeneration = ({ navigation }) => {
             <Text style={styles.date}>{formattedDate}</Text>
           </View>
         </View>
-        <View>
+        {/* <View>
           <Text>Timeformat = {rounded}</Text>
           <Text>InputString = {input}</Text>
-        </View>
+        </View> */}
         {!code ? (
           <Text style={styles.infoText}>
             Press Generate Code to get your current code.
