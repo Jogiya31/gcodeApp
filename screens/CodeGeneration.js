@@ -144,7 +144,6 @@ const CodeGeneration = ({ navigation }) => {
     const inputString =
       email.toLowerCase() +
       mobile.toString() +
-      key.toString() +
       currentTimestamp.toString();
 
     // Convert to UTF-8 before hashing
@@ -238,7 +237,6 @@ const CodeGeneration = ({ navigation }) => {
             input string ==
             {userDetails && userDetails.email}
             {userDetails && userDetails.mobile}
-            {userDetails && userDetails.key}
             {Math.floor(Date.now() / (5 * 60 * 1000)) * (5 * 60 * 1000)}
           </Text>
           <Text>
