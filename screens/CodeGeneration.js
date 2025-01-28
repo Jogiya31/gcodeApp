@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CryptoJS from "crypto-js";
+import moment from "moment";
 
 const CodeGeneration = ({ navigation }) => {
   const [userDetails, setUserDetails] = useState(null);
@@ -130,35 +131,33 @@ const CodeGeneration = ({ navigation }) => {
   const generateCode = (userDetails) => {
     const { email, mobile, key } = userDetails;
 
-    // Round the current timestamp to the nearest 5 minutes (300,000 ms)
+    // Round timestamp to nearest 5 minutes
     const fiveMinutesInMilliseconds = 5 * 60 * 1000;
-
-    // Current timestamp rounded to the nearest 5 minutes
     const currentTimestamp =
-      Math.round(Date.now() / fiveMinutesInMilliseconds) *
+      Math.floor(Date.now() / fiveMinutesInMilliseconds) *
       fiveMinutesInMilliseconds;
 
-    // Previous timestamp (5 minutes before current timestamp)
-    const previousTimestamp = currentTimestamp - fiveMinutesInMilliseconds;
-
     setRounded(currentTimestamp);
-    setPrevious(previousTimestamp);
+    setPrevious(currentTimestamp - fiveMinutesInMilliseconds);
 
     // Concatenate user details
     const inputString =
       email.toLowerCase() +
-      mobile.toLowerCase() +
-      key.toLowerCase() +
-      currentTimestamp;
+      mobile.toString() +
+      key.toString() +
+      currentTimestamp.toString();
+
+    // Convert to UTF-8 before hashing
+    const utf8Input = CryptoJS.enc.Utf8.parse(inputString);
 
     // Generate SHA256 hash
-    const hash = CryptoJS.SHA256(inputString).toString(CryptoJS.enc.Hex);
-    
-    // Take first 8 hex chars (4 bytes), parse as an integer
+    const hash = CryptoJS.SHA256(utf8Input).toString(CryptoJS.enc.Hex);
+
+    // Take the first 8 hex characters and parse as integer
     const hashInt = parseInt(hash.substring(0, 8), 16);
 
     // Convert to 5-digit code
-    const fiveDigitCode = (hashInt % 90000) + 10000;
+    const fiveDigitCode = (Math.abs(hashInt) % 90000) + 10000;
 
     return fiveDigitCode.toString();
   };
@@ -235,8 +234,20 @@ const CodeGeneration = ({ navigation }) => {
           <Text style={styles.codeText}>{code}</Text>
         )}
         <View>
-          <Text>Rounded== {Rounded}</Text>
-          <Text>Previous== {Previous}</Text>
+          <Text>
+            input string ==
+            {userDetails && userDetails.email}
+            {userDetails && userDetails.mobile}
+            {userDetails && userDetails.key}
+            {Math.floor(Date.now() / (5 * 60 * 1000)) * (5 * 60 * 1000)}
+          </Text>
+          <Text>
+            Rounded== {Rounded} / {moment(Rounded).format("YYYY-MM-DD HH:mm")}
+          </Text>
+          <Text>
+            Previous== {Previous} /{" "}
+            {moment(Previous).format("YYYY-MM-DD HH:mm")}
+          </Text>
         </View>
         {loading ? (
           <ActivityIndicator size="large" color="#4CAF50" />
