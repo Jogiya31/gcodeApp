@@ -144,6 +144,7 @@ const CodeGeneration = ({ navigation }) => {
     const inputString =
       email.toLowerCase() +
       mobile.toString() +
+      key.toString() +
       currentTimestamp.toString();
 
     // Convert to UTF-8 before hashing
