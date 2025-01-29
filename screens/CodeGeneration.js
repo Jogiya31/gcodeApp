@@ -20,8 +20,8 @@ const CodeGeneration = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [expirationTime, setExpirationTime] = useState(null);
   const [remainingTime, setRemainingTime] = useState(null);
-  const [formattedDate, setFormattedDate] = useState(""); 
-  const [formattedTime, setFormattedTime] = useState(""); 
+  const [formattedDate, setFormattedDate] = useState("");
+  const [formattedTime, setFormattedTime] = useState("");
   const progressAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -129,7 +129,7 @@ const CodeGeneration = ({ navigation }) => {
 
       return () => clearInterval(timer);
     }
-  }, [expirationTime]);
+  }, [expirationTime, progressAnim]);
 
   const animateProgress = (timeLeft) => {
     progressAnim.setValue(1);
@@ -190,10 +190,8 @@ const CodeGeneration = ({ navigation }) => {
       setExpirationTime(expiration);
       setCode(newCode);
       const currentTime = new Date().getTime();
-      
-      animateProgress(
-        Math.floor((expiration - currentTime) / 1000)
-      );
+
+      animateProgress(Math.floor((expiration - currentTime) / 1000));
 
       await AsyncStorage.setItem("generatedCode", newCode);
       await AsyncStorage.setItem("expirationTime", expiration.toString());
@@ -241,7 +239,7 @@ const CodeGeneration = ({ navigation }) => {
             <Text style={styles.date}>{formattedDate}</Text>
           </View>
         </View>
-        
+
         {!code ? (
           <Text style={styles.infoText}>
             Press Generate Code to get your current code.
@@ -358,8 +356,8 @@ const styles = StyleSheet.create({
     marginBottom: 54,
     textAlign: "center",
     color: "#282796",
-    textShadowColor: "rgba(46, 91, 173, 0.6)", 
-    textShadowOffset: { width: 2, height: 4 }, 
+    textShadowColor: "rgba(46, 91, 173, 0.6)",
+    textShadowOffset: { width: 2, height: 4 },
     textShadowRadius: 4,
   },
   infoText: {
@@ -397,6 +395,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     top: 0,
+    bottom:0,
     height: "100%",
     backgroundColor: "#00b652",
   },
