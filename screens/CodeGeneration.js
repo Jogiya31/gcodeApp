@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Alert,
   ImageBackground,
   StatusBar,
+  Animated,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CryptoJS from "crypto-js";
@@ -19,10 +20,9 @@ const CodeGeneration = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [expirationTime, setExpirationTime] = useState(null);
   const [remainingTime, setRemainingTime] = useState(null);
-  const [formattedDate, setFormattedDate] = useState(""); // State for formatted date
-  const [formattedTime, setFormattedTime] = useState(""); // State for formatted time
-  const [rounded, setrounded] = useState("");
-  const [input, setinput] = useState("");
+  const [formattedDate, setFormattedDate] = useState(""); 
+  const [formattedTime, setFormattedTime] = useState(""); 
+  const progressAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     StatusBar.setBarStyle("light-content");
@@ -69,6 +69,9 @@ const CodeGeneration = ({ navigation }) => {
                 0,
                 Math.floor((parsedExpirationTime - currentTime) / 1000)
               )
+            );
+            animateProgress(
+              Math.floor((parsedExpirationTime - currentTime) / 1000)
             );
           } else {
             setCode("");
@@ -128,9 +131,17 @@ const CodeGeneration = ({ navigation }) => {
     }
   }, [expirationTime]);
 
+  const animateProgress = (timeLeft) => {
+    progressAnim.setValue(1);
+    Animated.timing(progressAnim, {
+      toValue: 0,
+      duration: timeLeft * 1000,
+      useNativeDriver: false,
+    }).start();
+  };
+
   const generateCode = (userDetails) => {
     const { email, mobile, key } = userDetails;
-
     const now = new Date();
     const utcTimestamp = now.getTime() + now.getTimezoneOffset() * 60000;
     const istOffset = 5.5 * 60 * 60 * 1000;
@@ -145,9 +156,6 @@ const CodeGeneration = ({ navigation }) => {
 
     // Concatenate user details
     const inputString = email.toLowerCase() + mobile + key + formattedIST;
-
-    setrounded(formattedIST);
-    setinput(inputString);
 
     // Encode to UTF-8 explicitly (ensuring it matches C#)
     const utf8Input = new TextEncoder().encode(inputString);
@@ -177,10 +185,15 @@ const CodeGeneration = ({ navigation }) => {
       const newCode = generateCode(userDetails);
 
       //HERE WE DISABLE BUTTON FOR 1 MINUTE for testing
-      const expiration = new Date().getTime() + 1 * 60 * 1000;
+      const expiration = new Date().getTime() + 5 * 60 * 1000;
 
       setExpirationTime(expiration);
       setCode(newCode);
+      const currentTime = new Date().getTime();
+      
+      animateProgress(
+        Math.floor((expiration - currentTime) / 1000)
+      );
 
       await AsyncStorage.setItem("generatedCode", newCode);
       await AsyncStorage.setItem("expirationTime", expiration.toString());
@@ -228,10 +241,7 @@ const CodeGeneration = ({ navigation }) => {
             <Text style={styles.date}>{formattedDate}</Text>
           </View>
         </View>
-        <View>
-          <Text>Timeformat = {rounded}</Text>
-          <Text>InputString = {input}</Text>
-        </View>
+        
         {!code ? (
           <Text style={styles.infoText}>
             Press Generate Code to get your current code.
@@ -251,6 +261,17 @@ const CodeGeneration = ({ navigation }) => {
               onPress={handleGenerateCode}
               disabled={remainingTime !== null}
             >
+              <Animated.View
+                style={[
+                  styles.progressBar,
+                  {
+                    width: progressAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ["100%", "0%"],
+                    }),
+                  },
+                ]}
+              />
               <Text style={styles.buttonText}>
                 {remainingTime !== null
                   ? `Code expires in ${formatTime(remainingTime)}`
@@ -337,10 +358,9 @@ const styles = StyleSheet.create({
     marginBottom: 54,
     textAlign: "center",
     color: "#282796",
-    // textShadow: "2px 4px 4px rgba(46, 91, 173, 0.6)",
-    textShadowColor: "rgba(46, 91, 173, 0.6)", // Shadow color
-    textShadowOffset: { width: 2, height: 4 }, // Shadow offset
-    textShadowRadius: 4, // Shadow blur radius
+    textShadowColor: "rgba(46, 91, 173, 0.6)", 
+    textShadowOffset: { width: 2, height: 4 }, 
+    textShadowRadius: 4,
   },
   infoText: {
     fontSize: 18,
@@ -350,6 +370,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   button: {
+    position: "relative",
+    overflow: "hidden",
     width: "100%",
     backgroundColor: "#00b652",
     padding: 15,
@@ -370,6 +392,13 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
+  },
+  progressBar: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    height: "100%",
+    backgroundColor: "#00b652",
   },
 });
 

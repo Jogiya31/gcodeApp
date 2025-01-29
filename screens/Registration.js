@@ -186,20 +186,10 @@ const Registration = ({ navigation }) => {
         contentContainerStyle={styles.form}
         showsVerticalScrollIndicator={false}
       >
-        {/* <View>
-          <Text style={styles.label}>Login Name</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="login name"
-            value={loginName}
-            maxLength={40}
-            onChangeText={setLoginName}
-            placeholderTextColor="#aaa"
-            editable={!isFormDisabled} // Disable if form is disabled
-          />
-        </View> */}
         <View>
-          <Text style={styles.label}>Email ID</Text>
+          <Text style={styles.label}>
+            Email ID <Text style={styles.required}>*</Text>
+          </Text>
           <TextInput
             style={styles.input}
             placeholder="example@nic.in"
@@ -211,7 +201,9 @@ const Registration = ({ navigation }) => {
           />
         </View>
         <View>
-          <Text style={styles.label}>Phone</Text>
+          <Text style={styles.label}>
+            Phone <Text style={styles.required}>*</Text>
+          </Text>
           <TextInput
             style={styles.input}
             placeholder="0123456789"
@@ -224,7 +216,10 @@ const Registration = ({ navigation }) => {
           />
         </View>
         <View>
-          <Text style={styles.label}>Secret key</Text>
+          <Text style={styles.label}>
+            Secret key <Text style={styles.required}>*</Text>
+          </Text>
+
           <TextInput
             style={[styles.input]}
             placeholder="5 digit key"
@@ -311,6 +306,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
+  },
+  required: {
+    color: "#f00",
   },
 });
 
