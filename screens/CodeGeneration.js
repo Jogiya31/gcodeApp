@@ -259,7 +259,7 @@ const CodeGeneration = ({ navigation }) => {
               onPress={handleGenerateCode}
               disabled={remainingTime !== null}
             >
-              <Animated.View
+              {/* <Animated.View
                 style={[
                   styles.progressBar,
                   {
@@ -269,7 +269,7 @@ const CodeGeneration = ({ navigation }) => {
                     }),
                   },
                 ]}
-              />
+              /> */}
               <Text style={styles.buttonText}>
                 {remainingTime !== null
                   ? `Code expires in ${formatTime(remainingTime)}`
