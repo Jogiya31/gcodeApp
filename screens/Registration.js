@@ -62,7 +62,7 @@ const Registration = ({ navigation }) => {
       const storedDetails = await AsyncStorage.getItem("userDetails");
       if (storedDetails) {
         const parsedDetails = JSON.parse(storedDetails);
-        setLoginName(parsedDetails.loginName);
+        // setLoginName(parsedDetails.loginName);
         setEmail(parsedDetails.email);
         setMobile(parsedDetails.mobile);
         setKey(parsedDetails.key);
@@ -117,15 +117,20 @@ const Registration = ({ navigation }) => {
         { text: "OK", onPress: () => navigation.navigate("CodeGeneration") },
       ]);
     } else {
-      if (!loginName || !email || !mobile || !key) {
+      if (
+        // !loginName ||
+        !email ||
+        !mobile ||
+        !key
+      ) {
         Alert.alert("Error", "All fields are required.");
         return;
       }
 
-      if (loginName.length < 3) {
-        Alert.alert("Error", "Please enter a login name.");
-        return;
-      }
+      // if (loginName.length < 3) {
+      //   Alert.alert("Error", "Please enter a login name.");
+      //   return;
+      // }
 
       if (!validateEmail(email)) {
         Alert.alert("Error", "Please enter a valid email address.");
@@ -142,7 +147,8 @@ const Registration = ({ navigation }) => {
         return;
       }
 
-      const userDetails = { loginName, email, mobile, key };
+      // const userDetails = { loginName, email, mobile, key };
+      const userDetails = { email, mobile, key };
 
       try {
         // Remove existing user details from AsyncStorage
@@ -181,19 +187,9 @@ const Registration = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         <View>
-          <Text style={styles.label}>Login Name</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="login name"
-            value={loginName}
-            maxLength={40}
-            onChangeText={setLoginName}
-            placeholderTextColor="#aaa"
-            editable={!isFormDisabled} // Disable if form is disabled
-          />
-        </View>
-        <View>
-          <Text style={styles.label}>Email ID</Text>
+          <Text style={styles.label}>
+            Email ID <Text style={styles.required}>*</Text>
+          </Text>
           <TextInput
             style={styles.input}
             placeholder="example@nic.in"
@@ -205,7 +201,9 @@ const Registration = ({ navigation }) => {
           />
         </View>
         <View>
-          <Text style={styles.label}>Phone</Text>
+          <Text style={styles.label}>
+            Phone <Text style={styles.required}>*</Text>
+          </Text>
           <TextInput
             style={styles.input}
             placeholder="0123456789"
@@ -218,7 +216,10 @@ const Registration = ({ navigation }) => {
           />
         </View>
         <View>
-          <Text style={styles.label}>Secret key</Text>
+          <Text style={styles.label}>
+            Secret key <Text style={styles.required}>*</Text>
+          </Text>
+
           <TextInput
             style={[styles.input]}
             placeholder="5 digit key"
@@ -233,15 +234,12 @@ const Registration = ({ navigation }) => {
         <TouchableOpacity
           style={[
             styles.button,
-            (loginName === "" ||
-              email === "" ||
-              mobile === "" ||
-              key === "") && { backgroundColor: "#999" },
+            (email === "" || mobile === "" || key === "") && {
+              backgroundColor: "#999",
+            },
           ]}
           onPress={handleRegister}
-          disabled={
-            loginName === "" || email === "" || mobile === "" || key === ""
-          }
+          disabled={email === "" || mobile === "" || key === ""}
         >
           <Text style={styles.buttonText}>
             {storedData === null ? "Save" : "Update"}
@@ -308,6 +306,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
+  },
+  required: {
+    color: "#f00",
   },
 });
 
