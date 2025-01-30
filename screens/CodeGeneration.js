@@ -174,32 +174,34 @@ const CodeGeneration = ({ navigation }) => {
 
     return fiveDigitCode.toString();
   };
-
   const handleGenerateCode = async () => {
     if (userDetails) {
       if (remainingTime !== null && remainingTime > 0) {
         Alert.alert("Error", "Please wait for the current code to expire.");
         return;
       }
-
+  
       setLoading(true);
       const newCode = generateCode(userDetails);
-
-      //HERE WE DISABLE BUTTON FOR 1 MINUTE
+  
+      // Set expiration time for 1 minute (60000 ms)
       const expiration = new Date().getTime() + 1 * 60 * 1000;
-
+  
       setExpirationTime(expiration);
       setCode(newCode);
       const currentTime = new Date().getTime();
-
-      animateProgress(Math.floor((expiration - currentTime) / 1000));
-
+      const timeLeft = Math.floor((expiration - currentTime) / 1000);
+  
       await AsyncStorage.setItem("generatedCode", newCode);
       await AsyncStorage.setItem("expirationTime", expiration.toString());
-
+  
       setLoading(false);
+  
+      // Ensure the animation starts immediately
+      setTimeout(() => animateProgress(timeLeft), 100);
     }
   };
+  
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
