@@ -208,7 +208,7 @@ const Registration = ({ navigation }) => {
             onChangeText={setEmail}
             keyboardType="email-address"
             placeholderTextColor="#aaa"
-            editable={!isFormDisabled} // Disable if form is disabled
+            editable={!isFormDisabled} 
           />
         </View>
         <View>
@@ -223,7 +223,7 @@ const Registration = ({ navigation }) => {
             onChangeText={setMobile}
             keyboardType="phone-pad"
             placeholderTextColor="#aaa"
-            editable={!isFormDisabled} // Disable if form is disabled
+            editable={!isFormDisabled}
           />
         </View>
         <View>
@@ -239,7 +239,7 @@ const Registration = ({ navigation }) => {
             onChangeText={setKey}
             placeholderTextColor="#aaa"
             keyboardType="phone-pad"
-            editable={!isFormDisabled} // Disable if form is disabled
+            editable={!isFormDisabled}
           />
         </View>
         <TouchableOpacity
