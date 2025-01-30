@@ -166,6 +166,17 @@ const Registration = ({ navigation }) => {
     }
   };
 
+  const handleReset = () => {
+    AsyncStorage.removeItem("userDetails");
+    setStoredData(null);
+    setLoginName("");
+    setEmail("");
+    setMobile("");
+    setKey("");
+    setRemainingTime(null);
+    setIsFormDisabled(false);
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -245,6 +256,17 @@ const Registration = ({ navigation }) => {
             {storedData === null ? "Save" : "Update"}
           </Text>
         </TouchableOpacity>
+        {remainingTime === null ? (
+          <View style={styles.reset}>
+            <Text>
+              Click here to
+              <TouchableOpacity onPress={handleReset}>
+                <Text style={styles.resetText}> Reset </Text>
+              </TouchableOpacity>
+              user details
+            </Text>
+          </View>
+        ) : null}
       </ScrollView>
     </View>
   );
@@ -309,6 +331,15 @@ const styles = StyleSheet.create({
   },
   required: {
     color: "#f00",
+  },
+  reset: {
+    padding: 10,
+    marginTop: 10,
+  },
+  resetText: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#282796",
   },
 });
 
