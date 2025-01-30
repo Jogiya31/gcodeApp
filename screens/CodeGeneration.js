@@ -131,7 +131,6 @@ const CodeGeneration = ({ navigation }) => {
     }
   }, [expirationTime, progressAnim]);
 
-
   const animateProgress = (timeLeft) => {
     progressAnim.setValue(1); // Reset animation to full width
     Animated.timing(progressAnim, {
@@ -180,28 +179,27 @@ const CodeGeneration = ({ navigation }) => {
         Alert.alert("Error", "Please wait for the current code to expire.");
         return;
       }
-  
+
       setLoading(true);
       const newCode = generateCode(userDetails);
-  
+
       // Set expiration time for 1 minute (60000 ms)
       const expiration = new Date().getTime() + 1 * 60 * 1000;
-  
+
       setExpirationTime(expiration);
       setCode(newCode);
       const currentTime = new Date().getTime();
       const timeLeft = Math.floor((expiration - currentTime) / 1000);
-  
+
       await AsyncStorage.setItem("generatedCode", newCode);
       await AsyncStorage.setItem("expirationTime", expiration.toString());
-  
+
       setLoading(false);
-  
+
       // Ensure the animation starts immediately
       setTimeout(() => animateProgress(timeLeft), 100);
     }
   };
-  
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -268,9 +266,8 @@ const CodeGeneration = ({ navigation }) => {
                   {
                     width: progressAnim.interpolate({
                       inputRange: [0, 1],
-                      outputRange: ["100%", "0%"],
+                      outputRange: ["100%", "0%"], // Shrinks from full width to 0%
                     }),
-                    height: "100%", // Ensure full button height
                   },
                 ]}
               />
@@ -397,12 +394,11 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     position: "absolute",
-    left: 0,
     top: 0,
-    bottom: 0, 
-    right: 0, 
-    height: "100%",
-    backgroundColor: "#00b652", 
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#00b652", // Semi-transparent overlay
   },
 });
 
