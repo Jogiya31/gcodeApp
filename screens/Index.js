@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, ImageBackground } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Index = ({ navigation }) => {
@@ -24,29 +24,35 @@ const Index = ({ navigation }) => {
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.logoContainer}>
+    <ImageBackground
+      source={require("../assets/home_bg.png")}
+      style={styles.background}
+      resizeMode="contain"
+    >
+      <View style={styles.container}>
         <Image
           source={require("../assets/prayasLogo.png")}
           style={styles.logo}
           resizeMode="contain"
         />
+        <Text style={styles.footer}>
+          Powered by <Text style={styles.primaryColor}>NIC</Text>
+        </Text>
       </View>
-      <Text style={styles.footer}>
-        Powered by <Text style={styles.primaryColor}>NIC</Text>
-      </Text>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1, 
+    width: "100%", 
+    height: "100%", 
+  },
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  logoContainer: {
-    position: "absolute",
   },
   logo: {
     width: 300,
