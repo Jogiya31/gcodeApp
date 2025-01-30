@@ -270,6 +270,7 @@ const CodeGeneration = ({ navigation }) => {
                       inputRange: [0, 1],
                       outputRange: ["100%", "0%"],
                     }),
+                    height: "100%", // Ensure full button height
                   },
                 ]}
               />
@@ -398,9 +399,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     top: 0,
-    bottom:0,
+    bottom: 0, 
+    right: 0, 
     height: "100%",
-    backgroundColor: "#00b652",
+    backgroundColor: "#00b652", 
   },
 });
 
