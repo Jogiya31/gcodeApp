@@ -131,12 +131,13 @@ const CodeGeneration = ({ navigation }) => {
     }
   }, [expirationTime, progressAnim]);
 
+
   const animateProgress = (timeLeft) => {
-    progressAnim.setValue(1);
+    progressAnim.setValue(1); // Reset animation to full width
     Animated.timing(progressAnim, {
       toValue: 0,
       duration: timeLeft * 1000,
-      useNativeDriver: false,
+      useNativeDriver: false, // Change to true if using opacity instead of width
     }).start();
   };
 
@@ -254,12 +255,12 @@ const CodeGeneration = ({ navigation }) => {
             <TouchableOpacity
               style={[
                 styles.button,
-                remainingTime !== null && { backgroundColor: "#999" },
+                remainingTime !== null && { backgroundColor: "#4ac481" },
               ]}
               onPress={handleGenerateCode}
               disabled={remainingTime !== null}
             >
-              {/* <Animated.View
+              <Animated.View
                 style={[
                   styles.progressBar,
                   {
@@ -269,7 +270,7 @@ const CodeGeneration = ({ navigation }) => {
                     }),
                   },
                 ]}
-              /> */}
+              />
               <Text style={styles.buttonText}>
                 {remainingTime !== null
                   ? `Code expires in ${formatTime(remainingTime)}`
