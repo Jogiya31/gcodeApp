@@ -147,9 +147,9 @@ const CodeGeneration = ({ navigation }) => {
     const istOffset = 5.5 * 60 * 60 * 1000;
     const istTimestamp = utcTimestamp + istOffset;
 
-    // Always round down to the nearest 5 minutes
+    // Always round down to the nearest 1 minutes
     const roundedIstTimestamp =
-      Math.floor(istTimestamp / (5 * 60 * 1000)) * (5 * 60 * 1000);
+      Math.floor(istTimestamp / (1 * 60 * 1000)) * (1 * 60 * 1000);
 
     // Format timestamp to match C# output
     const formattedIST = moment(roundedIstTimestamp).format("YYYY-MM-DD HH:mm");
@@ -184,8 +184,8 @@ const CodeGeneration = ({ navigation }) => {
       setLoading(true);
       const newCode = generateCode(userDetails);
 
-      //HERE WE DISABLE BUTTON FOR 1 MINUTE for testing
-      const expiration = new Date().getTime() + 5 * 60 * 1000;
+      //HERE WE DISABLE BUTTON FOR 1 MINUTE
+      const expiration = new Date().getTime() + 1 * 60 * 1000;
 
       setExpirationTime(expiration);
       setCode(newCode);
