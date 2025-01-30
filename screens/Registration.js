@@ -256,7 +256,7 @@ const Registration = ({ navigation }) => {
             {storedData === null ? "Save" : "Update"}
           </Text>
         </TouchableOpacity>
-        {remainingTime === null ? (
+        {!isFormDisabled ? (
           <View style={styles.reset}>
             <Text>
               Click here to
