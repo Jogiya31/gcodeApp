@@ -258,13 +258,9 @@ const Registration = ({ navigation }) => {
         </TouchableOpacity>
         {!isFormDisabled ? (
           <View style={styles.reset}>
-            <Text>
-              Click here to
-              <TouchableOpacity onPress={handleReset}>
-                <Text style={styles.resetText}> Reset </Text>
-              </TouchableOpacity>
-              user details
-            </Text>
+          <TouchableOpacity onPress={handleReset}>
+            <Text>Click here to <Text style={styles.resetText}> Reset </Text>user details</Text>
+            </TouchableOpacity>
           </View>
         ) : null}
       </ScrollView>
